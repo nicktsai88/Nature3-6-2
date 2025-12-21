@@ -32,7 +32,6 @@
             padding: calc(var(--player-height) + 30px) 20px 20px 20px; 
             background-color: var(--bg-color); 
             color: var(--text-color);
-            /* 預設點狀背景 (測驗時使用) */
             background-image: 
                 radial-gradient(var(--secondary-color) 1px, transparent 1px),
                 radial-gradient(var(--secondary-color) 1px, transparent 1px);
@@ -40,17 +39,6 @@
             background-size: 50px 50px;
             background-attachment: fixed;
             min-height: 100vh;
-            transition: background-image 0.5s ease; /* 背景切換動畫 */
-        }
-
-        /* 背景圖樣式 (用於首頁與地圖頁) */
-        body.bg-custom {
-            /* 覆蓋原本的點狀背景 */
-            background-image: url('images/elements.jpg'); 
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
         }
 
         /* --- 音樂播放器固定列 --- */
@@ -336,7 +324,7 @@
         }
     </style>
 </head>
-<body class="bg-custom">
+<body>
 
     <!-- 頂部固定音樂播放器 -->
     <div id="music-player-bar">
@@ -1217,13 +1205,6 @@
             });
             document.getElementById(id).style.display = 'block';
             window.scrollTo(0, 0);
-
-            // 背景圖切換邏輯
-            if(id === 'welcome-screen' || id === 'level-screen') {
-                document.body.classList.add('bg-custom');
-            } else {
-                document.body.classList.remove('bg-custom');
-            }
         }
 
     </script>

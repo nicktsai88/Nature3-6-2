@@ -32,7 +32,6 @@
             padding: calc(var(--player-height) + 30px) 20px 20px 20px; 
             background-color: var(--bg-color); 
             color: var(--text-color);
-            /* 預設點狀背景 (測驗時使用) */
             background-image: 
                 radial-gradient(var(--secondary-color) 1px, transparent 1px),
                 radial-gradient(var(--secondary-color) 1px, transparent 1px);
@@ -40,17 +39,6 @@
             background-size: 50px 50px;
             background-attachment: fixed;
             min-height: 100vh;
-            transition: background-image 0.5s ease; /* 背景切換動畫 */
-        }
-
-        /* 背景圖樣式 (用於首頁與地圖頁) */
-        body.bg-custom {
-            /* 覆蓋原本的點狀背景 */
-            background-image: url('images/elements.jpg'); 
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
         }
 
         /* --- 音樂播放器固定列 --- */
@@ -253,20 +241,15 @@
         .waterfall-card.answered-correct { border: 2px solid var(--correct-color); background: #f0fff4; }
         .waterfall-card.answered-wrong { border: 2px solid var(--wrong-color); background: #fff5f5; }
 
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .card-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
         .card-index { 
             background: var(--secondary-color); color: #fff; 
             padding: 2px 10px; border-radius: 5px; font-weight: bold; font-size: 0.9em; 
         }
-        .card-actions { display: flex; align-items: center; gap: 10px; }
-        .card-fav-btn, .card-trash-btn, .std-fav-btn {
+        .card-fav-btn {
             background: none; border: none; font-size: 1.5em; cursor: pointer; color: #ccc; transition: 0.2s;
-            display: flex; align-items: center; justify-content: center;
         }
-        .card-fav-btn:hover, .std-fav-btn:hover { transform: scale(1.1); }
-        .card-fav-btn.active, .std-fav-btn.active { color: var(--favorite-color); }
-        .card-trash-btn { color: #e74c3c; font-size: 1.3em; }
-        .card-trash-btn:hover { transform: scale(1.2); }
+        .card-fav-btn.active { color: var(--favorite-color); }
 
         .wf-question-text { font-size: 1.2em; font-weight: bold; color: #2c3e50; margin-bottom: 15px; line-height: 1.5; }
         .wf-question-img { max-width: 100%; max-height: 200px; display: block; margin: 10px 0; border-radius: 5px; }
@@ -301,8 +284,6 @@
         .option-btn.correct { background: #d4edda !important; border-color: #28a745 !important; }
         .option-btn.wrong { background: #f8d7da !important; border-color: #dc3545 !important; }
 
-        .std-q-header { display: flex; justify-content: flex-end; margin-bottom: 10px; }
-
         /* --- 按鈕通用 --- */
         .btn {
             background-color: var(--primary-color); color: #FFF; border: none;
@@ -336,7 +317,7 @@
         }
     </style>
 </head>
-<body class="bg-custom">
+<body>
 
     <!-- 頂部固定音樂播放器 -->
     <div id="music-player-bar">
@@ -451,8 +432,6 @@
 
             <div id="question-container" style="margin-top:20px;">
                 <div style="background:#fff; border-left:5px solid var(--primary-color); padding:20px; margin-bottom:20px; border-radius:5px; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
-                    <!-- 這裡會動態插入 Header (含收藏按鈕) -->
-                    <div id="std-q-header-container"></div>
                     <div id="question-text" class="question-text">載入中...</div>
                     <img id="question-image" style="max-width:100%; max-height:250px; display:none; margin-top:10px; border-radius:5px;">
                 </div>
@@ -733,19 +712,6 @@
             document.getElementById('current-q-num').innerText = currentQIndex + 1;
             document.getElementById('progress-bar').style.width = ((currentQIndex) / currentQuizData.length * 100) + '%';
             
-            // 加入收藏按鈕 UI
-            const headerContainer = document.getElementById('std-q-header-container');
-            const favs = JSON.parse(localStorage.getItem(getUserKey('favoriteBank'))) || [];
-            const isFav = favs.includes(q.id);
-            
-            headerContainer.innerHTML = `
-                <div class="std-q-header">
-                    <button class="std-fav-btn ${isFav?'active':''}" onclick="toggleStandardFavorite('${q.id}', this)">
-                        ${isFav ? '❤️' : '🤍'}
-                    </button>
-                </div>
-            `;
-
             // 確保不顯示重複序號 (如果題目已有序號，這裡只顯示題目內容)
             qEl.innerText = q.question; 
             
@@ -766,20 +732,6 @@
 
             // 自動儲存
             saveStandardProgress();
-        }
-
-        function toggleStandardFavorite(qId, btn) {
-            let favs = JSON.parse(localStorage.getItem(getUserKey('favoriteBank'))) || [];
-            if(favs.includes(qId)) {
-                favs = favs.filter(id => id !== qId);
-                btn.classList.remove('active');
-                btn.innerText = '🤍';
-            } else {
-                favs.push(qId);
-                btn.classList.add('active');
-                btn.innerText = '❤️';
-            }
-            localStorage.setItem(getUserKey('favoriteBank'), JSON.stringify(favs));
         }
 
         function checkStandardAnswer(btn, ans, q) {
@@ -899,11 +851,10 @@
                 data = allQuestions.filter(q => ids.includes(q.id));
             }
 
-            if(data.length === 0) return alert("目前沒有相關題目！");
+            if(data.length === 0) return alert("沒有相關題目！");
 
             currentQuizData = data;
             document.getElementById('wf-mode-title').innerText = title;
-            document.getElementById('wf-mode-title').dataset.type = type; // 儲存類型以供判斷
             
             // 檢查存檔 (僅限全範圍刷題，或可考慮都做)
             const saveKey = getUserKey(`wf_save_${type}`);
@@ -946,19 +897,10 @@
                 const favs = JSON.parse(localStorage.getItem(getUserKey('favoriteBank'))) || [];
                 const isFav = favs.includes(q.id);
 
-                // 判斷是否顯示垃圾桶
-                let trashBtnHtml = '';
-                if(type === 'mistake' || type === 'favorite') {
-                    trashBtnHtml = `<button class="card-trash-btn" onclick="manualDelete('${q.id}', '${type}')" title="從清單移除">🗑️</button>`;
-                }
-
                 let html = `
                     <div class="card-header">
                         <span class="card-index">#${idx + 1}</span>
-                        <div class="card-actions">
-                            ${trashBtnHtml}
-                            <button class="card-fav-btn ${isFav?'active':''}" onclick="toggleWfFavorite('${q.id}', this)">❤</button>
-                        </div>
+                        <button class="card-fav-btn ${isFav?'active':''}" onclick="toggleWfFavorite('${q.id}', this)">❤</button>
                     </div>
                     <div class="wf-question-text">${q.question}</div>
                     ${q.image ? `<img src="${q.image}" class="wf-question-img">` : ''}
@@ -1012,7 +954,7 @@
                 card.classList.add('answered-correct');
                 currentScore++;
                 audioCorrect.play();
-                // 注意：答對不再自動從錯題本移除
+                removeFromMistakeBank(qId);
             } else {
                 btnEl.classList.add('wrong');
                 card.classList.add('answered-wrong');
@@ -1032,37 +974,6 @@
             
             // 即時儲存
             saveWaterfallProgress(type);
-        }
-
-        // 手動刪除題目 (錯題本/收藏夾)
-        function manualDelete(qId, type) {
-            // 雙重確認
-            if(!confirm("確定要將此題從清單中移除嗎？")) return;
-            if(!confirm("⚠️ 再次確認：移除後將不再顯示於此清單中，確定執行？")) return;
-
-            if(type === 'mistake') {
-                removeFromMistakeBank(qId);
-            } else if (type === 'favorite') {
-                let favs = JSON.parse(localStorage.getItem(getUserKey('favoriteBank'))) || [];
-                favs = favs.filter(id => id !== qId);
-                localStorage.setItem(getUserKey('favoriteBank'), JSON.stringify(favs));
-            }
-
-            // 從 DOM 移除
-            const card = document.getElementById(`wf-card-${qId}`);
-            if(card) card.remove();
-            
-            // 從目前的資料陣列中移除，避免結算錯誤
-            currentQuizData = currentQuizData.filter(q => q.id !== qId);
-            
-            // 更新計數按鈕
-            updateSideButtons();
-            
-            // 若清空則提示
-            if(currentQuizData.length === 0) {
-                alert("清單已空！");
-                exitWaterfallMode();
-            }
         }
 
         function saveWaterfallProgress(type) {
@@ -1108,9 +1019,7 @@
         // --- 結算與共用功能 ---
         function showResult(score, total) {
             showScreen('score-box');
-            let finalScore = 0;
-            if(total > 0) finalScore = Math.round((score / total) * 100);
-            
+            const finalScore = Math.round((score / total) * 100);
             document.getElementById('final-score').innerText = finalScore;
             document.getElementById('final-name').innerText = userName;
             
@@ -1153,8 +1062,10 @@
         function retryQuiz() {
             if(currentMode === 'standard') startStandardQuiz(currentLevel);
             else {
-                // 判斷刷題類型 (從標題的 dataset 取值更穩)
-                const type = document.getElementById('wf-mode-title').dataset.type || 'all';
+                // 判斷刷題類型
+                let type = 'all'; 
+                if(document.getElementById('wf-mode-title').innerText.includes('錯題')) type = 'mistake';
+                if(document.getElementById('wf-mode-title').innerText.includes('收藏')) type = 'favorite';
                 startWaterfallMode(type);
             }
         }
@@ -1217,13 +1128,6 @@
             });
             document.getElementById(id).style.display = 'block';
             window.scrollTo(0, 0);
-
-            // 背景圖切換邏輯
-            if(id === 'welcome-screen' || id === 'level-screen') {
-                document.body.classList.add('bg-custom');
-            } else {
-                document.body.classList.remove('bg-custom');
-            }
         }
 
     </script>
