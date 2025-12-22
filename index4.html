@@ -268,23 +268,14 @@
         .card-trash-btn { color: #e74c3c; font-size: 1.3em; }
         .card-trash-btn:hover { transform: scale(1.2); }
 
-        /* 字體加大 - 題目與選項 */
-        .wf-question-text { 
-            font-size: 1.5em; /* 瀑布流題目加大 */
-            font-weight: bold; 
-            color: #2c3e50; 
-            margin-bottom: 15px; 
-            line-height: 1.5; 
-        }
+        .wf-question-text { font-size: 1.2em; font-weight: bold; color: #2c3e50; margin-bottom: 15px; line-height: 1.5; }
         .wf-question-img { max-width: 100%; max-height: 200px; display: block; margin: 10px 0; border-radius: 5px; }
 
         .wf-options { display: grid; gap: 10px; }
         .wf-option {
             width: 100%; padding: 12px; text-align: left;
             background: #fff; border: 1px solid #ccc; border-radius: 8px;
-            cursor: pointer; 
-            font-size: 1.3em; /* 瀑布流選項加大 */
-            transition: 0.2s; position: relative;
+            cursor: pointer; font-size: 1.1em; transition: 0.2s; position: relative;
         }
         .wf-option:hover:not(:disabled) { background: #f0f4f8; }
         .wf-option.correct { background: #d4edda; border-color: #28a745; color: #155724; font-weight: bold; }
@@ -300,15 +291,10 @@
         .waterfall-card.answered-wrong .wf-explanation { display: block; }
 
         /* --- 標準測驗 (維持部分樣式但隱藏序號) --- */
-        .question-text { 
-            font-size: 1.8em; /* 標準題目加大 */
-            font-weight: 600; 
-            line-height: 1.6; 
-        }
+        .question-text { font-size: 1.6em; font-weight: 600; line-height: 1.6; }
         .option-btn { 
             width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #e1e8ed; 
-            border-radius: 10px; background: #fff; cursor: pointer; 
-            font-size: 1.4em; /* 標準選項加大 */
+            border-radius: 10px; background: #fff; cursor: pointer; font-size: 1.3em;
             text-align: left; transition: 0.2s;
         }
         .option-btn:hover { background: #f7f9fc; border-color: var(--primary-color); }
@@ -752,11 +738,10 @@
             const favs = JSON.parse(localStorage.getItem(getUserKey('favoriteBank'))) || [];
             const isFav = favs.includes(q.id);
             
-            // iOS Fix: 使用文字版愛心 + &#xFE0E;
             headerContainer.innerHTML = `
                 <div class="std-q-header">
                     <button class="std-fav-btn ${isFav?'active':''}" onclick="toggleStandardFavorite('${q.id}', this)">
-                        ${isFav ? '♥&#xFE0E;' : '♡&#xFE0E;'}
+                        ${isFav ? '❤️' : '🤍'}
                     </button>
                 </div>
             `;
@@ -788,11 +773,11 @@
             if(favs.includes(qId)) {
                 favs = favs.filter(id => id !== qId);
                 btn.classList.remove('active');
-                btn.innerHTML = '♡&#xFE0E;'; // iOS Fix: 空心
+                btn.innerText = '🤍';
             } else {
                 favs.push(qId);
                 btn.classList.add('active');
-                btn.innerHTML = '♥&#xFE0E;'; // iOS Fix: 實心
+                btn.innerText = '❤️';
             }
             localStorage.setItem(getUserKey('favoriteBank'), JSON.stringify(favs));
         }
@@ -967,15 +952,12 @@
                     trashBtnHtml = `<button class="card-trash-btn" onclick="manualDelete('${q.id}', '${type}')" title="從清單移除">🗑️</button>`;
                 }
 
-                // iOS Fix: 使用文字版愛心 + &#xFE0E;
                 let html = `
                     <div class="card-header">
                         <span class="card-index">#${idx + 1}</span>
                         <div class="card-actions">
                             ${trashBtnHtml}
-                            <button class="card-fav-btn ${isFav?'active':''}" onclick="toggleWfFavorite('${q.id}', this)">
-                                ${isFav ? '♥&#xFE0E;' : '♡&#xFE0E;'}
-                            </button>
+                            <button class="card-fav-btn ${isFav?'active':''}" onclick="toggleWfFavorite('${q.id}', this)">❤</button>
                         </div>
                     </div>
                     <div class="wf-question-text">${q.question}</div>
@@ -1098,11 +1080,9 @@
             if(favs.includes(qId)) {
                 favs = favs.filter(id => id !== qId);
                 btn.classList.remove('active');
-                btn.innerHTML = '♡&#xFE0E;'; // iOS Fix: 空心
             } else {
                 favs.push(qId);
                 btn.classList.add('active');
-                btn.innerHTML = '♥&#xFE0E;'; // iOS Fix: 實心
             }
             localStorage.setItem(getUserKey('favoriteBank'), JSON.stringify(favs));
         }
